@@ -1,0 +1,133 @@
+---
+author: Sheida Majidi
+date: 2024-03-26
+output:
+  html_document: default
+  word_document: default
+title: Exercise 2 - Fakebook Bus
+---
+
+## Introduction
+
+This analysis aims to determine the best seat on the Fakebook bus for
+maximizing networking opportunities by using network analysis centrality
+measures. We will calculate degree, closeness, and betweenness
+centrality for each available seat to understand which seat offers the
+best potential for building informal connections.
+
+\`\`\`{r setup, include=FALSE} knitr::opts_chunk\$set(echo = TRUE)
+library(tidygraph) library(ggraph) library(dplyr) library(igraph)
+
+
+    ## Import and explore data
+
+    I provided and attached dataset Fakebook_bus.csv, containing the edges representing possible communication lines between seats.
+
+
+    ```{r data}
+    bus_data = read.csv('/Users/sheidamajidi/Desktop/Winter2024/Winter2024-2/ORGB672/Exercises/Exercise 2/Fakebook_bus.csv')
+    print(bus_data)
+
+## Build the network graph
+
+Now, I'll create a graph object from the data to analyze the seating
+arrangement network.
+
+\`\`\`{r network-build, echo=FALSE} \# converting the data frame to a
+graph object bus_graph = graph_from_data_frame(bus_data, directed =
+FALSE)
+
+# ploting the initial graph
+
+plot(bus_graph, vertex.size=20, vertex.label.cex=0.8)
+
+
+    ## Centrality measures calculation
+
+    At this step, I'll calculate degree, closeness, and betweenness centrality to identify the most strategic seat.
+
+    ```{r centrality-calculation, echo=FALSE}
+    # Degree centrality
+    degree_centrality = degree(bus_graph, mode = "all")
+
+    # Closeness centrality
+    closeness_centrality = closeness(bus_graph, mode = "all")
+
+    # Betweenness centrality
+    betweenness_centrality = betweenness(bus_graph)  # removed the mode argument
+
+    centrality_df = data.frame(
+      Seat = V(bus_graph)$name,
+      Degree = degree_centrality,
+      Closeness = closeness_centrality,
+      Betweenness = betweenness_centrality
+    )
+
+    centrality_df
+
+## Analyze seat choices
+
+Now, I'll analyze the centrality measures for open seats (A-D) to
+identify the best seat for networking.
+
+\`\`\`{r seat-choice-analysis, echo=FALSE} open_seats = centrality_df
+%\>% filter(Seat %in% c('A', 'B', 'C', 'D')) open_seats
+
+\`\`\`
+
+## Analysis/ Discussion:
+
+From the results, I can observe the centrality measures for each
+available seat (A, B, C, and D):
+
+-   Seat A: Degree = 3, Closeness = 0.0625, Betweenness = 14
+-   Seat B: Degree = 5, Closeness = 0.07143, Betweenness = 9.03333
+-   Seat C: Degree = 5, Closeness = 0.07143, Betweenness = 8.6
+-   Seat D: Degree = 5, Closeness = 0.0625, Betweenness = 3.26667
+
+Degree Centrality: Seats B, C, and D all have the highest degree
+centrality, which indicates that they have the most direct connections
+with other seats. This suggests that these seats would allow for
+interactions with more passengers directly.
+
+Closeness Centrality: Seats B and C have the highest closeness
+centrality, suggesting that these seats are closest, on average, to all
+other seats in the network. This implies that information can travel
+more efficiently to and from these seats.
+
+Betweenness Centrality: Seat A has the highest betweenness centrality,
+which implies that Seat A is most often on the shortest path between two
+other seats. This seat acts as a bridge in the communication network and
+can control the flow of information between other passengers.
+
+## Possible consequences of seat choice:
+
+-   Choosing Seat A might make a central point for passing information
+    between different groups, which can be advantageous if the goal is
+    to be seen as a connector or influencer. However, the lower degree
+    centrality means one has fewer direct connections.
+-   Opting for Seat B or Seat C could be beneficial for having the most
+    direct interactions and being closely connected to everyone else,
+    which would be excellent for someone aiming to be approachable and
+    highly networked.
+-   Selecting Seat D offers direct connections similar to B and C, but
+    with a lower betweenness centrality, indicating it's less of a
+    bridge for information flow.
+
+## Conclusion:
+
+The choice of seat depends on the networking goals. If one aims to be a
+key influencer and control the flow of information, Seat A is a
+strategic choice. However, for maximum direct interactions and to be
+closely connected to all other nodes, Seats B or C are preferable.
+Finally, Seat D is also a good choice for direct connections but may not
+place the person as centrally in information paths.
+
+While Seat B seems to be the most balanced option with high degree and
+closeness centrality and reasonably high betweenness centrality, Seat
+A's high betweenness centrality cannot be overlooked for its strategic
+importance in the network.
+
+In essence, one's choice should align with your personal networking
+strategy: whether to engage with many directly (B or C), be a key
+connector (A), or have a balance of both aspects (B).
